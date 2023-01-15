@@ -50,8 +50,9 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     end
 
     # parameters for Newmark-beta method
-    β = 1/4
-    γ = 1/2
+    NewmarkBeta = file.Advanced.NewmarkBeta
+    β = NewmarkBeta.beta
+    γ = NewmarkBeta.gamma
 
     FEMCondition(gravity, t_stop, dt_cr, loadinput, num_data, outdir, histinds, β, γ)
 end
@@ -163,6 +164,7 @@ function fem_run(
 
     g = femcond.gravity
     β = femcond.β
+    γ = femcond.γ
     field = ScalarField()
 
     grid_entire = reduce(grids) do grid1, grid2
@@ -265,7 +267,7 @@ function fem_run(
             assemble!(p, C_tan, K_tan, Δu, v, estbtm)
 
             ψ .= M*a + p - f
-            K★ .= M/(dt^2*β) + 0.5C_tan/(dt*β) + K_tan
+            K★ .= M/(dt^2*β) + γ*C_tan/(dt*β) + K_tan
         end
 
         if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0

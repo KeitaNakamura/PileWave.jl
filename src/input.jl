@@ -54,9 +54,15 @@ Base.@kwdef struct TOMLOutput
     history_points :: Vector{Int} = Int[]
 end
 
+Base.@kwdef struct TOMLNewmarkBeta
+    beta  :: Float64 = 1/4
+    gamma :: Float64 = 1/2
+end
+
 Base.@kwdef struct TOMLAdvanced{S <: Shape}
-    shape :: S       = Line3()
-    CFL   :: Float64 = 1.0
+    shape       :: S               = Line3()
+    CFL         :: Float64         = 1.0
+    NewmarkBeta :: TOMLNewmarkBeta = TOMLNewmarkBeta()
 end
 
 Base.@kwdef struct TOMLPile
