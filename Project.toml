@@ -1,0 +1,16 @@
+name = "PileDriving"
+uuid = "74a0572f-1e79-4fab-a8d4-5355cc1fb79b"
+authors = ["Keita Nakamura <keita.nakamura.1109@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Femto = "8a6dffb5-f0a3-43b0-807d-ee99672b66b8"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+TOMLX = "17ed53b9-17a0-4985-8cf6-3beb52540041"
+
+[compat]
+Femto = "0.11"
+Interpolations = "0.14"
+StructArrays = "0.6"
+TOMLX = "0.4"
