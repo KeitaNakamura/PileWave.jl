@@ -45,7 +45,8 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     histinds = map(histpts) do pt
         # find closest node index
         grid = first(grids) # any grid is ok because we only want to use `get_allnodes`
-        value, index = findmin(x->abs(only(x)-pt), get_allnodes(grid))
+        nodes = get_allnodes(grid)
+        value, index = findmin(x->abs((only(x)-pt) - only(first(nodes))), nodes)
         index
     end
 
