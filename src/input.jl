@@ -48,8 +48,8 @@ Base.@kwdef struct TOMLInput{Model}
     loadinput      :: Union{Function, String}
 end
 
-Base.@kwdef struct TOMLOutput
-    directory      :: String      = "Output"
+Base.@kwdef mutable struct TOMLOutput
+    directory      :: String      = ""
     num_data       :: Int         = 100
     history_points :: Vector{Int} = Int[]
 end
@@ -96,12 +96,14 @@ function read_inputfile(file::String)
 end
 
 function read_input(dict::Dict{String, Any})
-    name = get(dict, "__name__", "")
+    name = get(dict, "__name__", "fem1d")
     Input      = TOMLX.from_dict(TOMLInput, dict["Input"])
     Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", Dict{String, Any}()))
     Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", Dict{String, Any}()))
     Pile       = map(pile->TOMLX.from_dict(TOMLPile, pile), dict["Pile"])
     PileBottom = TOMLX.from_dict(TOMLPileBottom, dict["PileBottom"])
     SoilLayer  = map(layer->TOMLX.from_dict(Input.soilmodel, layer), dict["SoilLayer"])
+    # modify output directory
+    Output.directory = Output.directory=="" ? splitext(basename(name))[1]*".tmp" : Output.directory
     TOMLFile(name, Input, Output, Advanced, Pile, PileBottom, SoilLayer)
 end
