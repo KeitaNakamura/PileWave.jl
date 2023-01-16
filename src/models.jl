@@ -5,23 +5,25 @@ abstract type ElementStateBottom end
 # staticstress #
 ################
 
-function staticstress(q₁::Real, q₂::Real, τᵤ::Real, R::Real, τₙ::Real, Δu::Real)
-    (k, τy) = Δu ≥ 0 ? (τᵤ/q₁, τᵤ) : (τᵤ/q₂, R*τᵤ)
+function staticstress(k₁::Real, k₂::Real, τy::Real, τₙ::Real, Δu::Real)
+    k = ifelse(Δu ≥ 0, k₁, k₂)
     τᵗʳ = τₙ + k * Δu
     fᵗʳ = abs(τᵗʳ) - τy # yield function
-    if fᵗʳ ≤ 0
-        return τᵗʳ
-    else
-        return τᵗʳ - sign(τᵗʳ)*fᵗʳ
-    end
+    fᵗʳ ≤ 0 && return τᵗʳ
+    τᵗʳ - sign(τᵗʳ)*fᵗʳ
+end
+
+function staticstress(k₁::Real, k₂::Real, τᵤ::Real, R::Real, τₙ::Real, Δu::Real)
+    χ = (τᵤ - R*τᵤ) / 2
+    staticstress(k₁, k₂, τᵤ-χ, τₙ-χ, Δu) + χ
 end
 
 function staticstress(est::ElementState, Δu::Real)
-    staticstress(est.q₁, est.q₂, est.τ̄ᵤ, est.R, est.τ̄ₙ, Δu)
+    staticstress(est.k₁, est.k₂, est.τ̄ᵤ, est.R, est.τ̄ₙ, Δu)
 end
 
 function staticstress(est::ElementStateBottom, Δu::Real)
-    staticstress(est.q₁, est.q₂, est.σ̄ᵤ, est.R, est.σ̄ₙ, Δu)
+    staticstress(est.k₁, est.k₂, est.σ̄ᵤ, est.R, est.σ̄ₙ, Δu)
 end
 
 ###############
@@ -35,8 +37,8 @@ struct VoigtElementState <: ElementState
     A  :: Float64 # diameter
     θ  :: Float64 # perimeter
     # parameters for soil model
-    q₁ :: Float64 # quake 1
-    q₂ :: Float64 # quake 2
+    k₁ :: Float64 # stiffness 1
+    k₂ :: Float64 # stiffness 2
     τ̄ᵤ :: Float64 # ultimate shaft resistance (friction)
     R  :: Float64 # yield stress factor
     C  :: Float64 # damping
@@ -50,8 +52,8 @@ mutable struct VoigtElementStateBottom <: ElementStateBottom
     # parameters for pile
     A  :: Float64 # diameter
     # parameters for soil model
-    q₁ :: Float64 # quake 1
-    q₂ :: Float64 # quake 2
+    k₁ :: Float64 # stiffness 1
+    k₂ :: Float64 # stiffness 2
     σ̄ᵤ :: Float64 # ultimate shaft resistance (friction)
     R  :: Float64 # yield factor
     C  :: Float64 # damping
@@ -68,8 +70,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, pile::TOMLPile)
     est.ρ  = pile.density
     est.A  = pile.area
     est.θ  = pile.perimeter
-    est.q₁ = Inf
-    est.q₂ = Inf
+    est.k₁ = 0
+    est.k₂ = 0
     est.τ̄ᵤ = 0
     est.R  = 0
     est.C  = 0
@@ -79,8 +81,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, pile::TOMLPile)
     est
 end
 function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
-    est.q₁ = layer.quake_1
-    est.q₂ = layer.quake_2
+    est.k₁ = layer.yield_stress / layer.quake_1
+    est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
     est.R  = layer.yield_factor
     est.C  = layer.damping
@@ -88,8 +90,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
 end
 function create_elementstatebottom(::Type{VoigtModel}, pilebottom::TOMLPileBottom, layer::VoigtModel, btm::Int)
     VoigtElementStateBottom(pilebottom.area,
-                            layer.quake_bottom_1,
-                            layer.quake_bottom_2,
+                            layer.yield_stress_bottom / layer.quake_bottom_1,
+                            layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,
                             layer.yield_factor_bottom,
                             layer.damping_bottom,
@@ -182,8 +184,8 @@ struct SmithElementState <: ElementState
     A  :: Float64 # diameter
     θ  :: Float64 # perimeter
     # parameters for soil model
-    q₁ :: Float64 # quake 1
-    q₂ :: Float64 # quake 2
+    k₁ :: Float64 # stiffness 1
+    k₂ :: Float64 # stiffness 2
     τ̄ᵤ :: Float64 # ultimate shaft resistance (friction)
     R  :: Float64 # yield stress factor
     J  :: Float64 # smith damping
@@ -197,8 +199,8 @@ mutable struct SmithElementStateBottom <: ElementStateBottom
     # parameters for pile
     A  :: Float64 # diameter
     # parameters for soil model
-    q₁ :: Float64 # quake 1
-    q₂ :: Float64 # quake 2
+    k₁ :: Float64 # stiffness 1
+    k₂ :: Float64 # stiffness 2
     σ̄ᵤ :: Float64 # ultimate shaft resistance (friction)
     R  :: Float64 # yield factor
     J  :: Float64 # smith damping
@@ -215,8 +217,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, pile::TOMLPile)
     est.ρ  = pile.density
     est.A  = pile.area
     est.θ  = pile.perimeter
-    est.q₁ = Inf
-    est.q₂ = Inf
+    est.k₁ = 0
+    est.k₂ = 0
     est.τ̄ᵤ = 0
     est.R  = 0
     est.J  = 0
@@ -226,8 +228,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, pile::TOMLPile)
     est
 end
 function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
-    est.q₁ = layer.quake_1
-    est.q₂ = layer.quake_2
+    est.k₁ = layer.yield_stress / layer.quake_1
+    est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
     est.R  = layer.yield_factor
     est.J  = layer.damping
@@ -235,8 +237,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
 end
 function create_elementstatebottom(::Type{SmithModel}, pilebottom::TOMLPileBottom, layer::SmithModel, btm::Int)
     SmithElementStateBottom(pilebottom.area,
-                            layer.quake_bottom_1,
-                            layer.quake_bottom_2,
+                            layer.yield_stress_bottom / layer.quake_bottom_1,
+                            layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,
                             layer.yield_factor_bottom,
                             layer.damping_bottom,
