@@ -118,7 +118,7 @@ function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Ve
     # bottom state
     depth, btm = findmax(only, get_allnodes(last(grids)))
     layer_bottom = eachlayer(layers) do layer, top, bottom
-        top ≤ depth ≤ bottom ? layer : nothing
+        (top≤depth≤bottom || depth≈bottom) ? layer : nothing
     end
     estbtm = create_elementstatebottom(Model, pile_bottom, layer_bottom, btm)
 
