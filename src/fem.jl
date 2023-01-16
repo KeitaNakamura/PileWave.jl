@@ -228,7 +228,7 @@ function fem_run(
         open(joinpath(femcond.outdir, "history", "history_$i.csv"), "w") do io
             z = only(get_allnodes(grid_entire)[index])
             write(io, "# data at z = $z\n")
-            write(io, "time,displacement,force\n")
+            write(io, "time,displacement,velocity,acceleration,force\n")
         end
     end
 
@@ -296,8 +296,10 @@ function fem_run(
                 index = femcond.histinds[i]
                 open(joinpath(femcond.outdir, "history", "history_$i.csv"), "a") do io
                     displacement = u[index]
+                    velocity = v[index]
+                    acceleration = v[index]
                     force = Fᵢ[index]
-                    write(io, "$t,$displacement,$force\n")
+                    write(io, "$t,$displacement,$velocity,$acceleration,$force\n")
                 end
             end
         end
