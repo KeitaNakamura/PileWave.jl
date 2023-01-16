@@ -81,8 +81,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, pile::TOMLPile)
     est
 end
 function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
-    est.k₁ = layer.quake_1 / layer.yield_stress
-    est.k₂ = layer.quake_2 / layer.yield_stress
+    est.k₁ = layer.yield_stress / layer.quake_1
+    est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
     est.R  = layer.yield_factor
     est.C  = layer.damping
@@ -90,8 +90,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
 end
 function create_elementstatebottom(::Type{VoigtModel}, pilebottom::TOMLPileBottom, layer::VoigtModel, btm::Int)
     VoigtElementStateBottom(pilebottom.area,
-                            layer.quake_bottom_1 / layer.yield_stress_bottom,
-                            layer.quake_bottom_2 / layer.yield_stress_bottom,
+                            layer.yield_stress_bottom / layer.quake_bottom_1,
+                            layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,
                             layer.yield_factor_bottom,
                             layer.damping_bottom,
@@ -228,8 +228,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, pile::TOMLPile)
     est
 end
 function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
-    est.k₁ = layer.quake_1 / layer.yield_stress
-    est.k₂ = layer.quake_2 / layer.yield_stress
+    est.k₁ = layer.yield_stress / layer.quake_1
+    est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
     est.R  = layer.yield_factor
     est.J  = layer.damping
@@ -237,8 +237,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
 end
 function create_elementstatebottom(::Type{SmithModel}, pilebottom::TOMLPileBottom, layer::SmithModel, btm::Int)
     SmithElementStateBottom(pilebottom.area,
-                            layer.quake_bottom_1 / layer.yield_stress_bottom,
-                            layer.quake_bottom_2 / layer.yield_stress_bottom,
+                            layer.yield_stress_bottom / layer.quake_bottom_1,
+                            layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,
                             layer.yield_factor_bottom,
                             layer.damping_bottom,
