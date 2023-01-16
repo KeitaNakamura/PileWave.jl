@@ -91,11 +91,17 @@ end
 
 function read_inputfile(file::String)
     dict = TOMLX.parsefile(@__MODULE__, file)
+    dict["__name__"] = file
+    read_input(dict)
+end
+
+function read_input(dict::Dict{String, Any})
+    name = get(dict, "__name__", "")
     Input      = TOMLX.from_dict(TOMLInput, dict["Input"])
     Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", Dict{String, Any}()))
     Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", Dict{String, Any}()))
     Pile       = map(pile->TOMLX.from_dict(TOMLPile, pile), dict["Pile"])
     PileBottom = TOMLX.from_dict(TOMLPileBottom, dict["PileBottom"])
     SoilLayer  = map(layer->TOMLX.from_dict(Input.soilmodel, layer), dict["SoilLayer"])
-    TOMLFile(file, Input, Output, Advanced, Pile, PileBottom, SoilLayer)
+    TOMLFile(name, Input, Output, Advanced, Pile, PileBottom, SoilLayer)
 end

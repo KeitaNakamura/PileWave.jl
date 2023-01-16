@@ -146,9 +146,8 @@ end
 # fem_run #
 ###########
 
-function fem_run(path::String)
-    fem_run(read_inputfile(path))
-end 
+fem_run(path::String) = fem_run(read_inputfile(path))
+fem_run(dict::Dict{String, Any}) = fem_run(read_input(dict))
 
 function fem_run(file::TOMLFile)
     femcond, grids, ests, estbtm = fem_setup(file)
@@ -303,4 +302,5 @@ function fem_run(
         end
     end
 
+    u
 end
