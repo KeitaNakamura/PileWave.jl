@@ -210,7 +210,7 @@ function fem_run(
     Δu = zeros(ndofs)
 
     dirichlet = falses(ndofs)
-    if estbtm.σ̄ == Inf
+    if estbtm.σ̄ᵤ == Inf
         dirichlet[estbtm.index] = true
     else
         # do nothing
