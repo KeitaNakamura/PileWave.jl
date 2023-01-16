@@ -244,14 +244,14 @@ function fem_run(
 
         # predictor
         ũ = u + dt*v + dt^2*(1-2β)*a/2
-        ṽ = v + 0.5dt*a
+        ṽ = v + (1-γ)*dt*a
         @. u = ũ
         @. v = ṽ
 
         # corrector
         nlsolve!(u, dirichlet; symmetric=true) do ψ, K★, u
             @. a = (u - ũ) / (dt^2*β)
-            @. v = ṽ + 0.5dt*a
+            @. v = ṽ + γ*dt*a
             @. Δu = u - uₙ
 
             p = K * u
