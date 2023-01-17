@@ -1,14 +1,14 @@
-using PileDriving
+using PileWave
 using Test
 
 using LinearAlgebra
 using TOMLX
 
-using PileDriving: VoigtModel, SmithModel
+using PileWave: VoigtModel, SmithModel
 
 function test_multilayers(file::String, nlayers::Int, ans::Real)
     for n in 1:nlayers
-        dict = TOMLX.parsefile(PileDriving, file)
+        dict = TOMLX.parsefile(PileWave, file)
         sl1 = dict["SoilLayer"][begin]
         t = sl1["thickness"]
         dict["SoilLayer"] = map(1:n) do i
@@ -17,7 +17,7 @@ function test_multilayers(file::String, nlayers::Int, ans::Real)
             sl
         end
         dict["__name__"] = file
-        @test norm(PileDriving.fem_run(dict)) ≈ ans
+        @test norm(PileWave.fem_run(dict)) ≈ ans
     end
 end
 
@@ -40,7 +40,7 @@ end
         test_multilayers("shaft_bottom_friction_dashpot/smith.toml", nlayers, 6.818677234812194)
     end
     @testset "Complex version" begin
-        @test norm(PileDriving.fem_run("complex/voigt.toml")) ≈ 0.5574348073605702
-        @test norm(PileDriving.fem_run("complex/smith.toml")) ≈ 0.39045361123048
+        @test norm(PileWave.fem_run("complex/voigt.toml")) ≈ 0.5574348073605702
+        @test norm(PileWave.fem_run("complex/smith.toml")) ≈ 0.39045361123048
     end
 end
