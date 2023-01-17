@@ -1,0 +1,59 @@
+[Input]
+soilmodel = @jl VoigtModel
+embedded_depth = 12.0
+t_stop = 80e-3 # sec
+loadinput = @jl t -> 0≤t≤7e-3 ? 20e6*sin((π/7e-3)*t) : 0.0
+
+[Output]
+num_data = 200
+history_points = [0.0, 14.25, 28.0] # set coordinates
+
+[Advanced]
+shape = @jl Line2()
+CFL = 1.0
+
+[[Pile]]
+length = 27.7
+num_elements = @jl round(Int, 27.7/0.05)
+youngs_modulus = 210000e6
+density = 7850.0
+area = 0.2139
+perimeter = 7226e-3
+
+[[Pile]]
+length = 0.3
+num_elements = @jl round(Int, 0.3/0.05)
+youngs_modulus = 210000e6
+density = 7850.0
+area = 0.2156
+perimeter = 7282e-3
+
+[PileBottom]
+area = @jl π*(2.318/2)^2
+
+[[SoilLayer]] # シルト混り砂礫
+thickness = 9.05
+# shaft
+quake_1 = 1e-3
+yield_stress = 0.0163e6 # Pa
+damping = @jl 0.8 * 0.0163e6 # voigt damping
+
+[[SoilLayer]] # 粘土
+thickness = 0.65
+# shaft
+quake_1 = 1e-3
+yield_stress = 0.0021e6 # Pa
+damping = @jl 0.8 * 0.0021e6 # voigt damping
+
+[[SoilLayer]] # 粘土混り砂礫
+thickness = 2.3
+# shaft
+quake_1 = 1e-3
+yield_stress = 0.0530e6 # Pa
+damping = @jl 0.8 * 0.0530e6 # voigt damping
+# bottom
+quake_bottom_1 = 5e-3
+quake_bottom_2 = 1e-3
+yield_stress_bottom = 0.715e6 # Pa
+yield_factor_bottom = 0.1
+damping_bottom = @jl 0.2 * 0.715e6 # voigt damping
