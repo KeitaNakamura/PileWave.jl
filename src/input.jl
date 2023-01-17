@@ -4,36 +4,31 @@
 
 abstract type SoilModel end
 
+Base.@kwdef struct SoilModel_Shaft
+    quake_1      :: Float64
+    quake_2      :: Float64 = quake_1
+    yield_stress :: Float64
+    yield_factor :: Float64 = 1.0
+    damping      :: Float64
+end
+Base.@kwdef struct SoilModel_Bottom
+    quake_1      :: Float64 = Inf
+    quake_2      :: Float64 = quake_1
+    yield_stress :: Float64 = 0.0
+    yield_factor :: Float64 = 0.0
+    damping      :: Float64 = 0.0
+end
+
 Base.@kwdef struct VoigtModel <: SoilModel
-    thickness           :: Float64
-    # shaft
-    quake_1             :: Float64
-    quake_2             :: Float64 = quake_1
-    yield_stress        :: Float64
-    yield_factor        :: Float64 = 1.0
-    damping             :: Float64
-    # bottom
-    quake_bottom_1      :: Float64 = Inf
-    quake_bottom_2      :: Float64 = quake_bottom_1
-    yield_stress_bottom :: Float64 = 0.0
-    yield_factor_bottom :: Float64 = 0.0
-    damping_bottom      :: Float64 = 0.0
+    thickness :: Float64
+    shaft     :: SoilModel_Shaft
+    bottom    :: SoilModel_Bottom = SoilModel_Bottom()
 end
 
 Base.@kwdef struct SmithModel <: SoilModel
-    thickness           :: Float64
-    # shaft
-    quake_1             :: Float64
-    quake_2             :: Float64 = quake_1
-    yield_stress        :: Float64
-    yield_factor        :: Float64 = 1.0
-    damping             :: Float64
-    # bottom
-    quake_bottom_1      :: Float64 = Inf
-    quake_bottom_2      :: Float64 = quake_bottom_1
-    yield_stress_bottom :: Float64 = 0.0
-    yield_factor_bottom :: Float64 = 0.0
-    damping_bottom      :: Float64 = 0.0
+    thickness :: Float64
+    shaft     :: SoilModel_Shaft
+    bottom    :: SoilModel_Bottom = SoilModel_Bottom()
 end
 
 ####################
@@ -54,15 +49,15 @@ Base.@kwdef mutable struct TOMLOutput
     history_points :: Vector{Float64} = Float64[]
 end
 
-Base.@kwdef struct TOMLNewmarkBeta
+Base.@kwdef struct TOMLAdvanced_NewmarkBeta
     beta  :: Float64 = 1/4
     gamma :: Float64 = 1/2
 end
 
 Base.@kwdef struct TOMLAdvanced{S <: Shape}
-    shape       :: S               = Line3()
-    CFL         :: Float64         = 1.0
-    NewmarkBeta :: TOMLNewmarkBeta = TOMLNewmarkBeta()
+    shape       :: S                        = Line3()
+    CFL         :: Float64                  = 1.0
+    NewmarkBeta :: TOMLAdvanced_NewmarkBeta = TOMLAdvanced_NewmarkBeta()
 end
 
 Base.@kwdef struct TOMLPile

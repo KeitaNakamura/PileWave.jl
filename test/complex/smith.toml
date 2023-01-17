@@ -31,27 +31,13 @@ area_bottom = @jl π*(2.318/2)^2
 
 [[SoilLayer]] # シルト混り砂礫
 thickness = 9.05
-# shaft
-quake_1 = 1e-3
-yield_stress = 0.0163e6 # Pa
-damping = 0.8 # smith damping
+shaft = {quake_1=1e-3, yield_stress=0.0163e6, damping=0.8}
 
 [[SoilLayer]] # 粘土
 thickness = 0.65
-# shaft
-quake_1 = 1e-3
-yield_stress = 0.0021e6 # Pa
-damping = 0.8 # smith damping
+shaft = {quake_1=1e-3, yield_stress=0.0021e6, damping=0.8}
 
 [[SoilLayer]] # 粘土混り砂礫
 thickness = 2.3
-# shaft
-quake_1 = 1e-3
-yield_stress = 0.0530e6 # Pa
-damping = 0.8 # smith damping
-# bottom
-quake_bottom_1 = 5e-3
-quake_bottom_2 = 1e-3
-yield_stress_bottom = 0.715e6 # Pa
-yield_factor_bottom = 0.1
-damping_bottom = 0.2 # smith damping
+shaft = {quake_1=1e-3, yield_stress=0.0530e6, damping=0.8}
+bottom = {quake_1=5e-3, quake_2=1e-3, yield_stress=0.715e6, yield_factor=0.1, damping=0.2}
