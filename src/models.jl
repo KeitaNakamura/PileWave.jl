@@ -80,7 +80,7 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, pile::TOMLPile)
     est.dτ̄du = 0
     est
 end
-function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
+function set_elementstate!(est::LazyRow{VoigtElementState}, layer::SoilModel_Shaft)
     est.k₁ = layer.yield_stress / layer.quake_1
     est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
@@ -88,13 +88,13 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
     est.C  = layer.damping
     est
 end
-function create_elementstatebottom(::Type{VoigtModel}, pile::TOMLPile, layer::VoigtModel, btm::Int)
+function create_elementstatebottom(::Type{VoigtModel}, pile::TOMLPile, layer::SoilModel_Bottom, btm::Int)
     VoigtElementStateBottom(pile.area_bottom,
-                            layer.yield_stress_bottom / layer.quake_bottom_1,
-                            layer.yield_stress_bottom / layer.quake_bottom_2,
-                            layer.yield_stress_bottom,
-                            layer.yield_factor_bottom,
-                            layer.damping_bottom,
+                            layer.yield_stress / layer.quake_1,
+                            layer.yield_stress / layer.quake_2,
+                            layer.yield_stress,
+                            layer.yield_factor,
+                            layer.damping,
                             0,
                             0,
                             btm,)
@@ -227,7 +227,7 @@ function set_elementstate!(est::LazyRow{SmithElementState}, pile::TOMLPile)
     est.dτ̄du = 0
     est
 end
-function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
+function set_elementstate!(est::LazyRow{SmithElementState}, layer::SoilModel_Shaft)
     est.k₁ = layer.yield_stress / layer.quake_1
     est.k₂ = layer.yield_stress / layer.quake_2
     est.τ̄ᵤ = layer.yield_stress
@@ -235,13 +235,13 @@ function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
     est.J  = layer.damping
     est
 end
-function create_elementstatebottom(::Type{SmithModel}, pile::TOMLPile, layer::SmithModel, btm::Int)
+function create_elementstatebottom(::Type{SmithModel}, pile::TOMLPile, layer::SoilModel_Bottom, btm::Int)
     SmithElementStateBottom(pile.area_bottom,
-                            layer.yield_stress_bottom / layer.quake_bottom_1,
-                            layer.yield_stress_bottom / layer.quake_bottom_2,
-                            layer.yield_stress_bottom,
-                            layer.yield_factor_bottom,
-                            layer.damping_bottom,
+                            layer.yield_stress / layer.quake_1,
+                            layer.yield_stress / layer.quake_2,
+                            layer.yield_stress,
+                            layer.yield_factor,
+                            layer.damping,
                             0,
                             0,
                             btm,)

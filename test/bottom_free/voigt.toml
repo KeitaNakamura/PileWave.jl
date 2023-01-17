@@ -19,7 +19,4 @@ perimeter = 1
 
 [[SoilLayer]]
 thickness = @jl 4π
-# shaft
-quake_1 = inf
-yield_stress = 0.0
-damping = 0.0
+shaft = {quake_1=inf, yield_stress=0.0, damping=0.0}

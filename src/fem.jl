@@ -107,7 +107,7 @@ function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Ve
             z < 0 && continue
             eachlayer(layers) do layer, top, bottom
                 if top ≤ z ≤ bottom
-                    set_elementstate!(LazyRow(est, i), layer)
+                    set_elementstate!(LazyRow(est, i), layer.shaft)
                     return true
                 end
                 nothing
@@ -120,7 +120,7 @@ function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Ve
     layer_bottom = eachlayer(layers) do layer, top, bottom
         (top≤depth≤bottom || depth≈bottom) ? layer : nothing
     end
-    estbtm = create_elementstatebottom(Model, piles[end], layer_bottom, btm)
+    estbtm = create_elementstatebottom(Model, piles[end], layer_bottom.bottom, btm)
 
     ests, estbtm
 end
@@ -133,7 +133,6 @@ function fem_setup(file::TOMLFile)
     grids = generate_grids(file.Advanced.shape,
                            file.Pile,
                            file.Input.embedded_depth)
-
     ests, estbtm = generate_elementstate(file.Input.soilmodel,
                                          grids,
                                          file.SoilLayer,
