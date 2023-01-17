@@ -17,9 +17,6 @@ density = 1
 area = 1
 perimeter = 1
 
-[PileBottom]
-area = 1
-
 [[SoilLayer]]
 thickness = @jl 4π
 # shaft
