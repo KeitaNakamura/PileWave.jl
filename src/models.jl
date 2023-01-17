@@ -88,8 +88,8 @@ function set_elementstate!(est::LazyRow{VoigtElementState}, layer::VoigtModel)
     est.C  = layer.damping
     est
 end
-function create_elementstatebottom(::Type{VoigtModel}, pilebottom::TOMLPileBottom, layer::VoigtModel, btm::Int)
-    VoigtElementStateBottom(pilebottom.area,
+function create_elementstatebottom(::Type{VoigtModel}, pile::TOMLPile, layer::VoigtModel, btm::Int)
+    VoigtElementStateBottom(pile.area_bottom,
                             layer.yield_stress_bottom / layer.quake_bottom_1,
                             layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,
@@ -235,8 +235,8 @@ function set_elementstate!(est::LazyRow{SmithElementState}, layer::SmithModel)
     est.J  = layer.damping
     est
 end
-function create_elementstatebottom(::Type{SmithModel}, pilebottom::TOMLPileBottom, layer::SmithModel, btm::Int)
-    SmithElementStateBottom(pilebottom.area,
+function create_elementstatebottom(::Type{SmithModel}, pile::TOMLPile, layer::SmithModel, btm::Int)
+    SmithElementStateBottom(pile.area_bottom,
                             layer.yield_stress_bottom / layer.quake_bottom_1,
                             layer.yield_stress_bottom / layer.quake_bottom_2,
                             layer.yield_stress_bottom,

@@ -73,10 +73,7 @@ Base.@kwdef struct TOMLPile
     density        :: Float64
     area           :: Float64
     perimeter      :: Float64
-end
-
-Base.@kwdef struct TOMLPileBottom
-    area :: Float64
+    area_bottom    :: Float64 = area
 end
 
 struct TOMLFile{M <: SoilModel, S <: Femto.Line}
@@ -85,7 +82,6 @@ struct TOMLFile{M <: SoilModel, S <: Femto.Line}
     Output     :: TOMLOutput
     Advanced   :: TOMLAdvanced{S}
     Pile       :: Vector{TOMLPile}
-    PileBottom :: TOMLPileBottom
     SoilLayer  :: Vector{M}
 end
 
@@ -101,9 +97,8 @@ function read_input(dict::Dict{String, Any})
     Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", Dict{String, Any}()))
     Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", Dict{String, Any}()))
     Pile       = map(pile->TOMLX.from_dict(TOMLPile, pile), dict["Pile"])
-    PileBottom = TOMLX.from_dict(TOMLPileBottom, dict["PileBottom"])
     SoilLayer  = map(layer->TOMLX.from_dict(Input.soilmodel, layer), dict["SoilLayer"])
     # modify output directory
     Output.directory = Output.directory=="" ? splitext(basename(name))[1]*".tmp" : Output.directory
-    TOMLFile(name, Input, Output, Advanced, Pile, PileBottom, SoilLayer)
+    TOMLFile(name, Input, Output, Advanced, Pile, SoilLayer)
 end

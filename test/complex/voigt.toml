@@ -27,9 +27,7 @@ youngs_modulus = 210000e6
 density = 7850.0
 area = 0.2156
 perimeter = 7282e-3
-
-[PileBottom]
-area = @jl π*(2.318/2)^2
+area_bottom = @jl π*(2.318/2)^2
 
 [[SoilLayer]] # シルト混り砂礫
 thickness = 9.05
