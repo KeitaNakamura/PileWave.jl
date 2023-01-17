@@ -1,4 +1,4 @@
-module PileDriving
+module PileWave
 
 using Femto
 using TOMLX
@@ -10,4 +10,4 @@ include("input.jl")
 include("models.jl")
 include("fem.jl")
 
-end # module PileDriving
+end # module PileWave
