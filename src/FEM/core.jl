@@ -125,11 +125,11 @@ function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Ve
     ests, estbtm
 end
 
-#############
-# fem_setup #
-#############
+#########
+# setup #
+#########
 
-function fem_setup(file::TOMLFile)
+function setup(file::TOMLFile)
     grids = generate_grids(file.Advanced.shape,
                            file.Pile,
                            file.Input.embedded_depth)
@@ -141,19 +141,19 @@ function fem_setup(file::TOMLFile)
     femcond, grids, ests, estbtm
 end
 
-###########
-# fem_run #
-###########
+#########
+# solve #
+#########
 
-fem_run(path::String) = fem_run(read_inputfile(path))
-fem_run(dict::Dict{String, Any}) = fem_run(read_input(dict))
+solve(path::String) = solve(read_inputfile(path))
+solve(dict::Dict{String, Any}) = solve(read_input(dict))
 
-function fem_run(file::TOMLFile)
-    femcond, grids, ests, estbtm = fem_setup(file)
-    fem_run(femcond, grids, ests, estbtm)
+function solve(file::TOMLFile)
+    femcond, grids, ests, estbtm = setup(file)
+    solve(femcond, grids, ests, estbtm)
 end 
 
-function fem_run(
+function solve(
         femcond::FEMCondition,
         grids::Vector{<: Grid},
         ests::Vector{<: StructArray{<: ElementState}},
