@@ -1,4 +1,4 @@
-module FEM
+module FEM1D
 
 using Femto
 using TOMLX
@@ -10,4 +10,4 @@ include("input.jl")
 include("states.jl")
 include("core.jl")
 
-end # module FEM
+end # module FEM1D

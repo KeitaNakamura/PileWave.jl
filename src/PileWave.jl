@@ -1,5 +1,5 @@
 module PileWave
 
-include("FEM/FEM.jl")
+include("FEM1D/FEM1D.jl")
 
 end # module PileWave
