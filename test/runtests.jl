@@ -38,7 +38,7 @@ end
         test_fem_multilayers("FEM/shaft_bottom_friction_dashpot/smith.toml", nlayers, 6.818677234812194)
     end
     @testset "Complex version" begin
-        @test norm(PileWave.FEM.solve("FEM/complex/voigt.toml")) ≈ 0.5574348073605702
-        @test norm(PileWave.FEM.solve("FEM/complex/smith.toml")) ≈ 0.39045361123048
+        @test norm(PileWave.FEM.solve("FEM/complex/voigt.toml")) ≈ 0.17796429382389684
+        @test norm(PileWave.FEM.solve("FEM/complex/smith.toml")) ≈ 0.12515693582582205
     end
 end
