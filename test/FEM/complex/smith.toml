@@ -14,7 +14,7 @@ CFL = 1.0
 
 [[Pile]]
 length = 27.7
-num_elements = @jl round(Int, 27.7/0.05)
+num_elements = @jl max(1, round(Int, 27.7/0.5))
 youngs_modulus = 210000e6
 density = 7850.0
 area = 0.2139
@@ -22,7 +22,7 @@ perimeter = 7226e-3
 
 [[Pile]]
 length = 0.3
-num_elements = @jl round(Int, 0.3/0.05)
+num_elements = @jl max(1, round(Int, 0.3/0.5))
 youngs_modulus = 210000e6
 density = 7850.0
 area = 0.2156
