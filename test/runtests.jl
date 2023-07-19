@@ -6,7 +6,7 @@ using TOMLX
 
 function test_fem_multilayers(file::String, nlayers::Int, ans::Real)
     for n in 1:nlayers
-        dict = TOMLX.parsefile(PileWave.FEM1D, file)
+        dict = TOMLX.parsefile(PileWave, file)
         sl1 = dict["SoilLayer"][begin]
         t = sl1["thickness"]
         dict["SoilLayer"] = map(1:n) do i
@@ -15,7 +15,7 @@ function test_fem_multilayers(file::String, nlayers::Int, ans::Real)
             sl
         end
         dict["__name__"] = file
-        @test norm(PileWave.FEM1D.solve(dict)) ≈ ans
+        @test norm(PileWave.solve(dict)) ≈ ans
     end
 end
 
@@ -38,7 +38,7 @@ end
         test_fem_multilayers("FEM1D/shaft_bottom_friction_dashpot/smith.toml", nlayers, 6.818677234812194)
     end
     @testset "Complex version" begin
-        @test norm(PileWave.FEM1D.solve("FEM1D/complex/voigt.toml")) ≈ 0.17796429382389684
-        @test norm(PileWave.FEM1D.solve("FEM1D/complex/smith.toml")) ≈ 0.12515693582582205
+        @test norm(PileWave.solve("FEM1D/complex/voigt.toml")) ≈ 0.17796429382389684
+        @test norm(PileWave.solve("FEM1D/complex/smith.toml")) ≈ 0.12515693582582205
     end
 end
