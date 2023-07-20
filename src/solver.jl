@@ -231,7 +231,7 @@ function solve(
     end
 
     timestamps = LinRange(0, femcond.t_stop, round(Int, femcond.t_stop/femcond.dt_cr))
-    dt = step(timestamps)
+    Δt = step(timestamps)
 
     for (step, t) in enumerate(timestamps)
         f .= fγ
@@ -242,15 +242,15 @@ function solve(
         elementstate_startup!(estbtm)
 
         # predictor
-        ũ = u + dt*v + dt^2*(1-2β)*a/2
-        ṽ = v + (1-γ)*dt*a
+        ũ = u + Δt*v + Δt^2*(1-2β)*a/2
+        ṽ = v + (1-γ)*Δt*a
         @. u = ũ
         @. v = ṽ
 
         # corrector
         nlsolve!(u, dirichlet; symmetric=true) do ψ, K★, u
-            @. a = (u - ũ) / (dt^2*β)
-            @. v = ṽ + γ*dt*a
+            @. a = (u - ũ) / (Δt^2*β)
+            @. v = ṽ + γ*Δt*a
             @. Δu = u - uₙ
 
             p = K * u
@@ -265,7 +265,7 @@ function solve(
             assemble!(p, C_tan, K_tan, Δu, v, estbtm)
 
             ψ .= M*a + p - f
-            K★ .= M/(dt^2*β) + γ*C_tan/(dt*β) + K_tan
+            K★ .= M/(Δt^2*β) + γ*C_tan/(Δt*β) + K_tan
         end
 
         if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0
