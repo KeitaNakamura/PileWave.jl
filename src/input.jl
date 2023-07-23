@@ -5,11 +5,11 @@
 abstract type SoilModel end
 
 Base.@kwdef struct SoilModel_Shaft
-    quake_1      :: Float64
+    quake_1      :: Float64 = Inf
     quake_2      :: Float64 = quake_1
-    yield_stress :: Float64
+    yield_stress :: Float64 = 0.0
     yield_factor :: Float64 = 1.0
-    damping      :: Float64
+    damping      :: Float64 = 0.0
 end
 Base.@kwdef struct SoilModel_Bottom
     quake_1      :: Float64 = Inf
@@ -21,13 +21,13 @@ end
 
 Base.@kwdef struct VoigtModel <: SoilModel
     thickness :: Float64
-    shaft     :: SoilModel_Shaft
+    shaft     :: SoilModel_Shaft  = SoilModel_Shaft()
     bottom    :: SoilModel_Bottom = SoilModel_Bottom()
 end
 
 Base.@kwdef struct SmithModel <: SoilModel
     thickness :: Float64
-    shaft     :: SoilModel_Shaft
+    shaft     :: SoilModel_Shaft  = SoilModel_Shaft()
     bottom    :: SoilModel_Bottom = SoilModel_Bottom()
 end
 
