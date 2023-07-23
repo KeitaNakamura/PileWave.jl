@@ -45,7 +45,7 @@ end
 
 Base.@kwdef mutable struct TOMLOutput
     directory      :: String          = ""
-    num_data       :: Int             = 100
+    num_data       :: Int             = 200
     history_points :: Vector{Float64} = Float64[]
 end
 
