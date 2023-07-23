@@ -3,6 +3,7 @@
 [Input]
 soilmodel = @jl SmithModel
 embedded_depth = @jl 4π
+gravity = 0.0
 t_stop = @jl π
 loadinput = @jl t -> 0≤t≤π/20 ? 100*sin(20*t) : 0.0
 

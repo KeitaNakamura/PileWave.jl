@@ -38,7 +38,7 @@ end
 Base.@kwdef struct TOMLInput{Model}
     soilmodel      :: Type{Model}
     embedded_depth :: Float64
-    gravity        :: Float64 = 0.0
+    gravity        :: Float64
     t_stop         :: Float64
     loadinput      :: Union{Function, String}
 end

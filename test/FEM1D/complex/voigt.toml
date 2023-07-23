@@ -1,6 +1,7 @@
 [Input]
 soilmodel = @jl VoigtModel
 embedded_depth = 12.0
+gravity = 0.0
 t_stop = 80e-3 # sec
 loadinput = @jl t -> 0≤t≤7e-3 ? 20e6*sin((π/7e-3)*t) : 0.0
 
