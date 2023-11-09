@@ -15,7 +15,7 @@ function test_fem_multilayers(file::String, nlayers::Int, ans::Real)
             sl
         end
         dict["__name__"] = file
-        @test norm(PileWave.solve(dict)) ≈ ans
+        @test norm(PileWave.solve(dict; return_u=true)) ≈ ans
     end
 end
 
@@ -38,7 +38,7 @@ end
         test_fem_multilayers("FEM1D/shaft_bottom_friction_dashpot/smith.toml", nlayers, 6.818677234812194)
     end
     @testset "Complex version" begin
-        @test norm(PileWave.solve("FEM1D/complex/voigt.toml")) ≈ 0.17796429382389684
-        @test norm(PileWave.solve("FEM1D/complex/smith.toml")) ≈ 0.12515693582582205
+        @test norm(PileWave.solve("FEM1D/complex/voigt.toml"; return_u=true)) ≈ 0.17796429382389684
+        @test norm(PileWave.solve("FEM1D/complex/smith.toml"; return_u=true)) ≈ 0.12515693582582205
     end
 end
