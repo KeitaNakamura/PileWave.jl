@@ -144,19 +144,20 @@ end
 # solve #
 #########
 
-solve(path::String) = solve(read_inputfile(path))
-solve(dict::Dict{String, Any}) = solve(read_input(dict))
+solve(path::String; return_u::Bool=false) = solve(read_inputfile(path); return_u)
+solve(dict::Dict{String, Any}; return_u::Bool=false) = solve(read_input(dict); return_u)
 
-function solve(file::TOMLFile)
+function solve(file::TOMLFile; return_u::Bool = false)
     femcond, grids, ests, estbtm = setup(file)
-    solve(femcond, grids, ests, estbtm)
+    solve(femcond, grids, ests, estbtm; return_u)
 end 
 
 function solve(
         femcond::FEMCondition,
         grids::Vector{<: Grid},
         ests::Vector{<: StructArray{<: ElementState}},
-        estbtm::ElementStateBottom,
+        estbtm::ElementStateBottom;
+        return_u::Bool,
     )
 
     g = femcond.gravity
@@ -302,5 +303,5 @@ function solve(
         end
     end
 
-    u
+    return_u ? u : nothing
 end
