@@ -232,7 +232,7 @@ function solve(
     timestamps = LinRange(0, femcond.t_stop, round(Int, femcond.t_stop/femcond.dt_cr))
     Δt = step(timestamps)
 
-    for (step, t) in enumerate(timestamps)
+    @showprogress for (step, t) in enumerate(timestamps)
         f .= fγ
         f[begin] += femcond.loadinput(t)
 

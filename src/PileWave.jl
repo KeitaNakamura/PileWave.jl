@@ -3,6 +3,7 @@ module PileWave
 using Femto
 using TOMLX
 using CSV
+using ProgressMeter: @showprogress
 
 using StructArrays
 using Interpolations: linear_interpolation
