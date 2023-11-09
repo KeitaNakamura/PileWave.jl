@@ -27,11 +27,10 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
         loadinput = Input.loadinput
     else # Input.loadinput isa String
         path = Input.loadinput
-        @info "t_stop is determined from `loadinput` file \"$path\""
         path = isabspath(path) ? path : joinpath(dirname(file.name), path)
         @assert isfile(path)
         data = CSV.File(path; comment = "#")
-        loadinput = linear_interpolation(data.time, data.force)
+        loadinput = linear_interpolation(data.time, data.force; extrapolation_bc=0.0)
     end
 
     # output
