@@ -2,6 +2,7 @@ module PileWave
 
 using Femto
 using TOMLX
+using CSV
 
 using StructArrays
 using Interpolations: linear_interpolation
