@@ -226,7 +226,7 @@ function solve(
         open(joinpath(femcond.outdir, "history", "history_$i.csv"), "w") do io
             z = only(get_allnodes(grid_entire)[index])
             write(io, "# data at z = $z\n")
-            write(io, "time,displacement,velocity,acceleration,force\n")
+            write(io, "time,displacement,velocity,acceleration,force,force_down,force_up\n")
         end
     end
 
@@ -282,17 +282,26 @@ function solve(
         if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0
             V = zeros(ndofs)
             FV = zeros(ndofs)
+            ZV = zeros(ndofs) # projection for impedance `Z`
             for (grid, est) in zip(grids, ests)
-                u˜ = interpolate(field, grid, u)
+                ū = interpolate(field, grid, u)
                 integrate!((i,w)->one(w), V, field, grid)
                 integrate!(FV, field, grid) do i, w
                     E = est.E[i]
                     A = est.A[i]
-                    σ = -E * ∇(u˜[i]) # compression is positive
+                    σ = -E * ∇(ū[i]) # compression is positive
                     only(A * σ)
+                end
+                integrate!(ZV, field, grid) do i, w
+                    E = est.E[i]
+                    A = est.A[i]
+                    ρ = est.ρ[i]
+                    c = √(E/ρ)
+                    E*A/c
                 end
             end
             Fᵢ = FV ./ V
+            Zᵢ = ZV ./ V
             openpvd(pvdfile; append=true) do pvd
                 openvtk(joinpath(femcond.outdir, "paraview", "fepile1d_$step"), grid_entire) do vtk
                     vtk["Displacement"] = u
@@ -308,7 +317,10 @@ function solve(
                     velocity = v[index]
                     acceleration = v[index]
                     force = Fᵢ[index]
-                    write(io, "$t,$displacement,$velocity,$acceleration,$force\n")
+                    impedance = Zᵢ[index]
+                    force_down = (force + impedance*velocity) / 2
+                    force_up = (force - impedance*velocity) / 2
+                    write(io, "$t,$displacement,$velocity,$acceleration,$force,$force_down,$force_up\n")
                 end
             end
         end
