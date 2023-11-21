@@ -248,25 +248,36 @@ function solve(
         @. v = ṽ
 
         # corrector
-        nlsolve!(u, dirichlet; symmetric=true) do ψ, K★, u
+        function R!(ψ, u)
             @. a = (u - ũ) / (Δt^2*β)
             @. v = ṽ + γ*Δt*a
             @. Δu = u - uₙ
 
             p = K * u
+
+            for (grid, est) in zip(grids, ests)
+                Δu˜ = interpolate(field, grid, Δu)
+                v˜ = interpolate(field, grid, v)
+                assemble!(p, grid, Δu˜, v˜, est)
+            end
+            assemble!(p, Δu, v, estbtm)
+
+            ψ .= M*a + p - f
+        end
+        function J!(K★, u)
             C_tan .= 0
             K_tan .= K
 
             for (grid, est) in zip(grids, ests)
-                Δu˜ = collect(interpolate(field, grid, Δu))
-                v˜ = collect(interpolate(field, grid, v))
-                assemble!(p, C_tan, K_tan, grid, Δu˜, v˜, est)
+                Δu˜ = interpolate(field, grid, Δu)
+                v˜ = interpolate(field, grid, v)
+                assemble!(C_tan, K_tan, grid, Δu˜, v˜, est)
             end
-            assemble!(p, C_tan, K_tan, Δu, v, estbtm)
+            assemble!(C_tan, K_tan, Δu, v, estbtm)
 
-            ψ .= M*a + p - f
             K★ .= M/(Δt^2*β) + γ*C_tan/(Δt*β) + K_tan
         end
+        nlsolve!(R!, J!, u, dirichlet; symmetric=true, f_tol=1e-8, x_tol=1e-12)
 
         if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0
             V = zeros(ndofs)

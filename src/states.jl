@@ -60,6 +60,7 @@ mutable struct VoigtElementStateBottom <: ElementStateBottom
     # variables
     σ̄    :: Float64
     σ̄ₙ   :: Float64
+    dσ̄du :: Float64
     # dof index
     index :: Int
 end
@@ -97,6 +98,7 @@ function create_elementstatebottom(::Type{VoigtModel}, pile::TOMLPile, layer::So
                             layer.damping,
                             0,
                             0,
+                            0,
                             btm,)
 end
 
@@ -107,10 +109,9 @@ function elementstate_startup!(est::VoigtElementStateBottom)
     est.σ̄ₙ = est.σ̄
 end
 
+# vector
 function assemble!(
         p::AbstractVector,
-        C_tan::AbstractMatrix,
-        K_tan::AbstractMatrix,
         grid::Grid,
         Δu˜::AbstractMatrix,
         v˜::AbstractMatrix,
@@ -133,6 +134,17 @@ function assemble!(
         w*(τ̄*θ + C*v)
     end
 
+    nothing
+end
+# matrix
+function assemble!(
+        C_tan::AbstractMatrix,
+        K_tan::AbstractMatrix,
+        grid::Grid,
+        Δu˜::AbstractMatrix,
+        v˜::AbstractMatrix,
+        est::StructArray{VoigtElementState}
+    )
     # velocity contribution
     integrate!(C_tan, Sf(), grid) do i, w, dv
         C = est.C[i]
@@ -149,8 +161,29 @@ function assemble!(
     nothing
 end
 
+# vector
 function assemble!(
         p::AbstractVector,
+        Δu::AbstractVector,
+        v::AbstractVector,
+        est::VoigtElementStateBottom,
+    )
+    i = est.index
+
+    # update stress
+    dσ̄du, σ̄ = gradient(Δu->staticstress(est, Δu), Δu[i], :all)
+    est.σ̄ = σ̄
+    est.dσ̄du = dσ̄du
+
+    # assemble
+    Aₚ = est.A
+    Cₚ = est.C
+    p[i] += Aₚ*(σ̄ + Cₚ*v[i])
+
+    nothing
+end
+# matrix
+function assemble!(
         C_tan::AbstractMatrix,
         K_tan::AbstractMatrix,
         Δu::AbstractVector,
@@ -166,7 +199,7 @@ function assemble!(
     # assemble
     Aₚ = est.A
     Cₚ = est.C
-    p[i] += Aₚ*(σ̄ + Cₚ*v[i])
+    dσ̄du = est.dσ̄du
     C_tan[i,i] += Aₚ*Cₚ
     K_tan[i,i] += Aₚ*dσ̄du
 
@@ -207,6 +240,7 @@ mutable struct SmithElementStateBottom <: ElementStateBottom
     # variables
     σ̄    :: Float64
     σ̄ₙ   :: Float64
+    dσ̄du :: Float64
     # dof index
     index :: Int
 end
@@ -244,6 +278,7 @@ function create_elementstatebottom(::Type{SmithModel}, pile::TOMLPile, layer::So
                             layer.damping,
                             0,
                             0,
+                            0,
                             btm,)
 end
 
@@ -254,10 +289,9 @@ function elementstate_startup!(est::SmithElementStateBottom)
     est.σ̄ₙ = est.σ̄
 end
 
+# vector
 function assemble!(
         p::AbstractVector,
-        C_tan::AbstractMatrix,
-        K_tan::AbstractMatrix,
         grid::Grid,
         Δu˜::AbstractMatrix,
         v˜::AbstractMatrix,
@@ -280,6 +314,17 @@ function assemble!(
         w*τ̄*θ*(1 + J*v)
     end
 
+    nothing
+end
+# matrix
+function assemble!(
+        C_tan::AbstractMatrix,
+        K_tan::AbstractMatrix,
+        grid::Grid,
+        Δu˜::AbstractMatrix,
+        v˜::AbstractMatrix,
+        est::StructArray{SmithElementState}
+    )
     # velocity contribution
     integrate!(C_tan, Sf(), grid) do i, w, dv
         θ = est.θ[i]
@@ -300,10 +345,9 @@ function assemble!(
     nothing
 end
 
+# vector
 function assemble!(
         p::AbstractVector,
-        C_tan::AbstractMatrix,
-        K_tan::AbstractMatrix,
         Δu::AbstractVector,
         v::AbstractVector,
         est::SmithElementStateBottom,
@@ -313,11 +357,30 @@ function assemble!(
     # update stress
     dσ̄du, σ̄ = gradient(Δu->staticstress(est, Δu), Δu[i], :all)
     est.σ̄ = σ̄
+    est.dσ̄du = dσ̄du
 
     # assemble
     Aₚ = est.A
     Jₚ = est.J
     p[i] += σ̄*Aₚ*(1 + Jₚ*v[i])
+
+    nothing
+end
+# matrix
+function assemble!(
+        C_tan::AbstractMatrix,
+        K_tan::AbstractMatrix,
+        Δu::AbstractVector,
+        v::AbstractVector,
+        est::SmithElementStateBottom,
+    )
+    i = est.index
+
+    # assemble
+    Aₚ = est.A
+    Jₚ = est.J
+    σ̄ = est.σ̄
+    dσ̄du = est.dσ̄du
     C_tan[i,i] += σ̄*Aₚ*Jₚ
     K_tan[i,i] += dσ̄du*Aₚ*(1 + Jₚ*v[i])
 
