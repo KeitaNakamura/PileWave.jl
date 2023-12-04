@@ -20,5 +20,5 @@ perimeter = 1
 
 [[SoilLayer]]
 thickness = @jl 4π
-shaft = {quake_1=0.01, yield_stress=4.0, damping=@jl(0.01*4.0)}
-bottom = {quake_1=0.01, yield_stress=100.0, damping=@jl(0.01*100.0)}
+shaft = {quake=0.01, yield_stress=4.0, damping=@jl(0.01*4.0)}
+bottom = {quake=0.01, yield_stress=100.0, damping=@jl(0.01*100.0)}
