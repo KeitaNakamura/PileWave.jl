@@ -20,4 +20,4 @@ perimeter = 1
 
 [[SoilLayer]]
 thickness = @jl 4π
-bottom = {quake_1=0.01, yield_stress=100.0, damping=0.01}
+bottom = {quake=0.01, yield_stress=100.0, damping=0.01}
