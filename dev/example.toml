@@ -1,0 +1,44 @@
+[Input]
+embedded_depth = 12.0 # m
+gravity = 9.81 # m/s²
+t_stop = 80e-3 # s
+inputload = "load.csv" # specify the input file
+
+[Output]
+# directory = "case 1" # "<filename>.tmp" by default
+# num_data = 200 # number of output data (200 by default)
+history_points = [0.0, 14.25, 28.0] # coordinates to output time history data (0.0 means pile head)
+
+[Advanced]
+# shape = @jl Line3() # shape function (Line3() by default)
+# CFL = 0.5 # Courant number (0.5 by default)
+
+[[Pile]]
+length = 27.7 # m
+num_elements = 100
+youngs_modulus = 210000e6 # N/m²
+density = 7850.0 # kg/m³
+area = 0.2139 # m²
+perimeter = 7226e-3 # m
+
+[[Pile]]
+length = 0.3
+num_elements = 5
+youngs_modulus = 210000e6
+density = 7850.0
+area = 0.2156
+perimeter = 7282e-3
+area_bottom = 4.22 # π*(2.318/2)^2
+
+[[SoilLayer]] # gravel
+thickness = 9.05
+shaft = {quake=1e-3, yield_stress=0.0163e6, damping=13040.0}
+
+[[SoilLayer]] # clay
+thickness = 0.65
+shaft = {quake=1e-3, yield_stress=0.0021e6, damping=1680.0}
+
+[[SoilLayer]] # gravel
+thickness = 2.3
+shaft = {quake=1e-3, yield_stress=0.0530e6, damping=42400.0}
+bottom = {quake=5e-3, yield_stress=0.715e6, yield_factor=0.1, damping=143000.0}
