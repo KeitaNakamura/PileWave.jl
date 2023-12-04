@@ -42,7 +42,7 @@ Base.@kwdef struct TOMLInput{Model}
     embedded_depth :: Float64
     gravity        :: Float64
     t_stop         :: Float64
-    loadinput      :: Union{Function, String}
+    inputload      :: Union{Function, String}
 end
 
 Base.@kwdef mutable struct TOMLOutput

@@ -5,7 +5,7 @@ soilmodel = @jl SmithModel
 embedded_depth = @jl 4π
 gravity = 0.0
 t_stop = @jl π
-loadinput = @jl t -> 0≤t≤π/20 ? 100*sin(20*t) : 0.0
+inputload = @jl t -> 0≤t≤π/20 ? 100*sin(20*t) : 0.0
 
 [Advanced]
 CFL = 0.1
@@ -20,5 +20,5 @@ perimeter = 1
 
 [[SoilLayer]]
 thickness = @jl 4π
-shaft = {quake_1=0.01, yield_stress=4.0, damping=0.01}
-bottom = {quake_1=0.01, yield_stress=100.0, damping=0.01}
+shaft = {quake=0.01, yield_stress=4.0, damping=0.01}
+bottom = {quake=0.01, yield_stress=100.0, damping=0.01}

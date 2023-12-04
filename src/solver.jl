@@ -3,7 +3,7 @@ struct FEMCondition{F}
     gravity::Float64
     t_stop::Float64
     dt_cr::Float64
-    loadinput::F
+    inputload::F
     # output
     num_data::Int
     outdir::String
@@ -22,15 +22,15 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     dx_min = minimum(p->p.length/p.num_elements, file.Pile)
     c = maximum(p->√(p.youngs_modulus/p.density), file.Pile) # sound speed
     dt_cr = file.Advanced.CFL * (dx_min / c)
-    ## loadinput
-    if Input.loadinput isa Function
-        loadinput = Input.loadinput
-    else # Input.loadinput isa String
-        path = Input.loadinput
+    ## inputload
+    if Input.inputload isa Function
+        inputload = Input.inputload
+    else # Input.inputload isa String
+        path = Input.inputload
         path = isabspath(path) ? path : joinpath(dirname(file.name), path)
         @assert isfile(path)
         data = CSV.File(path; comment = "#")
-        loadinput = linear_interpolation(data.time, data.force; extrapolation_bc=0.0)
+        inputload = linear_interpolation(data.time, data.load; extrapolation_bc=0.0)
     end
 
     # output
@@ -54,7 +54,7 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     β = NewmarkBeta.beta
     γ = NewmarkBeta.gamma
 
-    FEMCondition(gravity, t_stop, dt_cr, loadinput, num_data, outdir, histinds, β, γ)
+    FEMCondition(gravity, t_stop, dt_cr, inputload, num_data, outdir, histinds, β, γ)
 end
 
 function generate_grids(shape::Femto.Line, Pile::Vector{TOMLPile}, embedded_depth::Real)
@@ -235,7 +235,7 @@ function solve(
 
     @showprogress for (step, t) in enumerate(timestamps)
         f .= fγ
-        f[begin] += femcond.loadinput(t)
+        f[begin] += femcond.inputload(t)
 
         uₙ .= u
         foreach(elementstate_startup!, ests)
