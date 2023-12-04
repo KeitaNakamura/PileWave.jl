@@ -12,7 +12,7 @@ makedocs(;
     modules = [PileWave],
     sitename = "PileWave.jl",
     pages=[
-        "Home" => "index.md",
+        "Manual" => "index.md",
     ],
     doctest = true, # :fix
 )
