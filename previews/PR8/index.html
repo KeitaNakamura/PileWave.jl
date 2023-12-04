@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Manual · PileWave.jl</title><meta name="title" content="Manual · PileWave.jl"/><meta property="og:title" content="Manual · PileWave.jl"/><meta property="twitter:title" content="Manual · PileWave.jl"/><meta name="description" content="Documentation for PileWave.jl."/><meta property="og:description" content="Documentation for PileWave.jl."/><meta property="twitter:description" content="Documentation for PileWave.jl."/><script data-outdated-warner src="assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="search_index.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href>PileWave.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Manual</a><ul class="internal"><li><a class="tocitem" href="#How-to-run"><span>How to run</span></a></li><li><a class="tocitem" href="#Input"><span>Input</span></a></li><li><a class="tocitem" href="#Output"><span>Output</span></a></li><li><a class="tocitem" href="#Soil-model"><span>Soil model</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Manual</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Manual</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/KeitaNakamura/PileWave.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/KeitaNakamura/PileWave.jl/blob/main/docs/src/index.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="PileWave"><a class="docs-heading-anchor" href="#PileWave">PileWave</a><a id="PileWave-1"></a><a class="docs-heading-anchor-permalink" href="#PileWave" title="Permalink"></a></h1><p><em>Pile driving analysis based on the one-dimensional wave propagation using the finite element method</em></p><h2 id="How-to-run"><a class="docs-heading-anchor" href="#How-to-run">How to run</a><a id="How-to-run-1"></a><a class="docs-heading-anchor-permalink" href="#How-to-run" title="Permalink"></a></h2><p>Use <a href="#REPL">REPL</a> or <a href="#Execution-file-(Windows)">Execution file (Windows)</a>.</p><h3 id="REPL"><a class="docs-heading-anchor" href="#REPL">REPL</a><a id="REPL-1"></a><a class="docs-heading-anchor-permalink" href="#REPL" title="Permalink"></a></h3><h4 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h4><pre><code class="language-jl hljs">pkg&gt; registry add https://github.com/KeitaNakamura/KeitaNakamuraRegistry.git
+
+pkg&gt; add PileWave</code></pre><h4 id="Running-simulations"><a class="docs-heading-anchor" href="#Running-simulations">Running simulations</a><a id="Running-simulations-1"></a><a class="docs-heading-anchor-permalink" href="#Running-simulations" title="Permalink"></a></h4><pre><code class="language-jl hljs">julia&gt; using PileWave
+
+julia&gt; PileWave.solve(&quot;input.toml&quot;)</code></pre><h3 id="Execution-file-(Windows)"><a class="docs-heading-anchor" href="#Execution-file-(Windows)">Execution file (Windows)</a><a id="Execution-file-(Windows)-1"></a><a class="docs-heading-anchor-permalink" href="#Execution-file-(Windows)" title="Permalink"></a></h3><h4 id="Downloads"><a class="docs-heading-anchor" href="#Downloads">Downloads</a><a id="Downloads-1"></a><a class="docs-heading-anchor-permalink" href="#Downloads" title="Permalink"></a></h4><p>Download execution file from <a href="https://github.com/KeitaNakamura/PileWave.jl/releases">releases</a>.</p><h4 id="Running-simulations-2"><a class="docs-heading-anchor" href="#Running-simulations-2">Running simulations</a><a class="docs-heading-anchor-permalink" href="#Running-simulations-2" title="Permalink"></a></h4><pre><code class="language-sh hljs">/path/to/PileWave.exe /path/to/input.toml</code></pre><h2 id="Input"><a class="docs-heading-anchor" href="#Input">Input</a><a id="Input-1"></a><a class="docs-heading-anchor-permalink" href="#Input" title="Permalink"></a></h2><p>The input <a href="https://toml.io/en/">TOML</a> file should be the following structure.</p><pre><code class="language-toml hljs">[Input]
+embedded_depth = 12.0 # m
+gravity = 9.81 # m/s²
+t_stop = 80e-3 # s
+inputload = &quot;load.csv&quot; # specify the input file
+
+[Output]
+# directory = &quot;case 1&quot; # &quot;&lt;filename&gt;.tmp&quot; by default
+# num_data = 200 # number of output data (200 by default)
+history_points = [0.0, 14.25, 28.0] # coordinates to output time history data (0.0 means pile head)
+
+[Advanced]
+# shape = @jl Line3() # shape function (Line3() by default)
+# CFL = 0.5 # Courant number (0.5 by default)
+
+[[Pile]]
+length = 27.7 # m
+num_elements = 100
+youngs_modulus = 210000e6 # N/m²
+density = 7850.0 # kg/m³
+area = 0.2139 # m²
+perimeter = 7226e-3 # m
+
+[[Pile]]
+length = 0.3
+num_elements = 5
+youngs_modulus = 210000e6
+density = 7850.0
+area = 0.2156
+perimeter = 7282e-3
+area_bottom = 4.22 # π*(2.318/2)^2
+
+[[SoilLayer]] # gravel
+thickness = 9.05
+shaft = {quake=1e-3, yield_stress=0.0163e6, damping=13040.0}
+
+[[SoilLayer]] # clay
+thickness = 0.65
+shaft = {quake=1e-3, yield_stress=0.0021e6, damping=1680.0}
+
+[[SoilLayer]] # gravel
+thickness = 2.3
+shaft = {quake=1e-3, yield_stress=0.0530e6, damping=42400.0}
+bottom = {quake=5e-3, yield_stress=0.715e6, yield_factor=0.1, damping=143000.0}</code></pre><p>The above example file is <a href="https://github.com/KeitaNakamura/PileWave.jl/blob/main/docs/src/example.toml">here</a>.</p><h3 id="Input-load-data"><a class="docs-heading-anchor" href="#Input-load-data">Input load data</a><a id="Input-load-data-1"></a><a class="docs-heading-anchor-permalink" href="#Input-load-data" title="Permalink"></a></h3><p><code>load.csv</code> must have <code>time</code> and <code>load</code> columns such as</p><pre><code class="language-csv hljs">time,load
+0.0,0.0
+0.1,239.00
+0.2,478.00
+[...]</code></pre><p>where the intermediate values are linearly interpolated.</p><h3 id="Parameters-for-soil-model"><a class="docs-heading-anchor" href="#Parameters-for-soil-model">Parameters for soil model</a><a id="Parameters-for-soil-model-1"></a><a class="docs-heading-anchor-permalink" href="#Parameters-for-soil-model" title="Permalink"></a></h3><ul><li><code>quake</code>: <span>$u_\mathrm{q}$</span> (<code>inf</code>: slip)</li><li><code>yield_stress</code>: <span>$R_\mathrm{u}$</span> (<code>0.0</code>: slip)</li><li><code>yield_factor</code>: <span>$\alpha$</span> (<code>1.0</code> for shaft and <code>0.0</code> for bottom)</li><li><code>damping</code>: <span>$C$</span> (<code>0.0</code>)</li></ul><div class="admonition is-info"><header class="admonition-header">Info</header><div class="admonition-body"><p>The values in bracket represent the default values.</p></div></div><h2 id="Output"><a class="docs-heading-anchor" href="#Output">Output</a><a id="Output-1"></a><a class="docs-heading-anchor-permalink" href="#Output" title="Permalink"></a></h2><p>The output data has following structure:</p><pre><code class="language-text hljs">output_directory
+├── history # time history data (the same order as specified in input file)
+│   ├── history_1.csv
+│   ├── history_2.csv
+│   ...
+└── paraview # files to visualize waves in ParaView
+    ├── fepile1d.pvd
+    ├── fepile1d_1.vtu
+    ...</code></pre><h2 id="Soil-model"><a class="docs-heading-anchor" href="#Soil-model">Soil model</a><a id="Soil-model-1"></a><a class="docs-heading-anchor-permalink" href="#Soil-model" title="Permalink"></a></h2><p>The soil resistance is decomposed into static and dynamic components:</p><p class="math-container">\[\begin{aligned}
+R &amp;= R_\mathrm{static}(u) + R_\mathrm{dynamic}(\dot{u}) \\
+  &amp;= R_\mathrm{static}(u) + C \dot{u}
+\end{aligned}\]</p><p>where <span>$R_\mathrm{static}$</span> is calculated based on the following friction model.</p><img src="fig1.svg" width="500"></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 4 December 2023 12:29">Monday 4 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
