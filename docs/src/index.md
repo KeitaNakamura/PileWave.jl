@@ -66,13 +66,15 @@ where the intermediate values are linearly interpolated.
 
 ### Parameters for soil model
 
+The values in bracket represent the default values.
+
 * `quake`: $u_\mathrm{q}$ (`inf`: slip)
 * `yield_stress`: $R_\mathrm{u}$ (`0.0`: slip)
 * `yield_factor`: $\alpha$ (`1.0` for shaft and `0.0` for bottom)
 * `damping`: $C$ (`0.0`)
 
 !!! info
-    The values in bracket represent the default values.
+    If you want to impose an exact *fixed condition* at the pile tip, set `yield_stress=inf` for `bottom`.
 
 ## Output
 
