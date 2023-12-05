@@ -26,19 +26,19 @@ length = 0.3
 num_elements = 5
 youngs_modulus = 210000e6
 density = 7850.0
-area = 0.2156
+area = 0.2792
 perimeter = 7282e-3
 area_bottom = 4.22 # π*(2.318/2)^2
 
 [[SoilLayer]] # gravel
 thickness = 9.05
-shaft = {quake=1e-3, yield_stress=0.0163e6, damping=13040.0}
+shaft = {quake=1e-3, yield_stress=0.0133e6, damping=10640.0}
 
 [[SoilLayer]] # clay
 thickness = 0.65
-shaft = {quake=1e-3, yield_stress=0.0021e6, damping=1680.0}
+shaft = {quake=1e-3, yield_stress=0.00213e6, damping=1704.0}
 
 [[SoilLayer]] # gravel
 thickness = 2.3
-shaft = {quake=1e-3, yield_stress=0.0530e6, damping=42400.0}
-bottom = {quake=5e-3, yield_stress=0.715e6, yield_factor=0.1, damping=143000.0}
+shaft = {quake=1e-3, yield_stress=0.07e6, damping=56000.0}
+bottom = {quake=1e-3, yield_stress=1.403e6, yield_factor=0.1, damping=280600.0}

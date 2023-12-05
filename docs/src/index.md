@@ -2,6 +2,8 @@
 
 *Pile driving analysis based on the one-dimensional wave propagation using the finite element method*
 
+This program is mostly based on the study by [Borja (1988)](https://www.sciencedirect.com/science/article/abs/pii/0266352X88900158).
+
 ## How to run
 
 Use [REPL](@ref) or [Execution file (Windows)](@ref).
