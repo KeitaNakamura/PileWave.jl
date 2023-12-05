@@ -1,7 +1,7 @@
 name = "PileWave"
 uuid = "74a0572f-1e79-4fab-a8d4-5355cc1fb79b"
 authors = ["Keita Nakamura <keita.nakamura.1109@gmail.com>"]
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -15,6 +15,7 @@ TOMLX = "17ed53b9-17a0-4985-8cf6-3beb52540041"
 CSV = "0.10"
 Femto = "0.12"
 Interpolations = "0.14, 0.15"
+ProgressMeter = "1.9"
 StructArrays = "0.6"
 TOMLX = "0.4"
 julia = "1.7"
