@@ -2,7 +2,7 @@
 embedded_depth = 12.0 # m
 gravity = 9.81 # m/s²
 t_stop = 80e-3 # s
-inputload = "load.csv" # specify the input file
+input_load = "load.csv" # specify the input file
 
 [Output]
 # directory = "case 1" # "<filename>.tmp" by default

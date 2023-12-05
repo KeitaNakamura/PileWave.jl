@@ -5,7 +5,7 @@ soilmodel = @jl VoigtModel
 embedded_depth = @jl 4π
 gravity = 0.0
 t_stop = @jl π
-inputload = @jl t -> 0≤t≤π/20 ? 100*sin(20*t) : 0.0
+input_load = @jl t -> 0≤t≤π/20 ? 100*sin(20*t) : 0.0
 
 [Advanced]
 CFL = 0.1
