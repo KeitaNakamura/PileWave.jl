@@ -58,7 +58,7 @@ end
 
 Base.@kwdef struct TOMLAdvanced{S <: Shape}
     shape       :: S                        = Line3()
-    CFL         :: Float64                  = 1.0
+    CFL         :: Float64                  = 0.5
     NewmarkBeta :: TOMLAdvanced_NewmarkBeta = TOMLAdvanced_NewmarkBeta()
 end
 
