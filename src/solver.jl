@@ -224,7 +224,8 @@ function solve(
     for i in eachindex(femcond.histinds)
         index = femcond.histinds[i]
         open(joinpath(femcond.outdir, "history", "history_$i.csv"), "w") do io
-            z = only(get_allnodes(grid_entire)[index])
+            nodes = get_allnodes(grid_entire)
+            z = only(nodes[index] - nodes[1])
             write(io, "# data at z = $z\n")
             write(io, "time,displacement,velocity,acceleration,force,force_down,force_up\n")
         end
