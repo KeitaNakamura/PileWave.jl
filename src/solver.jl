@@ -277,7 +277,7 @@ function solve(
 
             K★ .= M/(Δt^2*β) + γ*C_tan/(Δt*β) + K_tan
         end
-        nlsolve!(R!, J!, u, dirichlet; symmetric=true, f_tol=1e-8, x_tol=1e-12)
+        nlsolve!(R!, J!, u, dirichlet; symmetric=true, f_tol=1e-8, dx_tol=1e-12)
 
         if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0
             V = zeros(ndofs)
