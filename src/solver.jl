@@ -236,6 +236,7 @@ function solve(
     end
 
     # setup outputs
+    isdir(femcond.outdir) && rm(femcond.outdir; recursive=true, force=true)
     mkpath(joinpath(femcond.outdir, "paraview"))
     mkpath(joinpath(femcond.outdir, "history"))
     ## paraview
