@@ -144,12 +144,33 @@ end
 # solve #
 #########
 
-solve(path::String; return_u::Bool=false) = solve(read_inputfile(path); return_u)
-solve(dict::Dict{String, Any}; return_u::Bool=false) = solve(read_input(dict); return_u)
+struct Solution
+    t::Vector{Float64}
+    z::Vector{Float64}
+    u::Matrix{Float64}
+    v::Matrix{Float64}
+    a::Matrix{Float64}
+    f::Matrix{Float64}
+    Z::Matrix{Float64}
+end
 
-function solve(file::TOMLFile; return_u::Bool = false)
+function Solution(num_nodes::Int, num_timestamps::Int)
+    t = Vector{Float64}(undef, num_timestamps)
+    z = Vector{Float64}(undef, num_nodes)
+    u = Matrix{Float64}(undef, num_nodes, num_timestamps)
+    v = Matrix{Float64}(undef, num_nodes, num_timestamps)
+    a = Matrix{Float64}(undef, num_nodes, num_timestamps)
+    f = Matrix{Float64}(undef, num_nodes, num_timestamps)
+    Z = Matrix{Float64}(undef, num_nodes, num_timestamps)
+    Solution(t, z, u, v, a, f, Z)
+end
+
+solve(path::String; return_solution::Bool=false) = solve(read_inputfile(path); return_solution)
+solve(dict::Dict{String, Any}; return_solution::Bool=false) = solve(read_input(dict); return_solution)
+
+function solve(file::TOMLFile; return_solution::Bool = false)
     femcond, grids, ests, estbtm = setup(file)
-    solve(femcond, grids, ests, estbtm; return_u)
+    solve(femcond, grids, ests, estbtm; return_solution)
 end 
 
 function solve(
@@ -157,7 +178,7 @@ function solve(
         grids::Vector{<: Grid},
         ests::Vector{<: StructArray{<: ElementState}},
         estbtm::ElementStateBottom;
-        return_u::Bool,
+        return_solution::Bool,
     )
 
     g = femcond.gravity
@@ -215,6 +236,7 @@ function solve(
     end
 
     # setup outputs
+    isdir(femcond.outdir) && rm(femcond.outdir; recursive=true, force=true)
     mkpath(joinpath(femcond.outdir, "paraview"))
     mkpath(joinpath(femcond.outdir, "history"))
     ## paraview
@@ -234,7 +256,17 @@ function solve(
     timestamps = LinRange(0, femcond.t_stop, round(Int, femcond.t_stop/femcond.dt_cr))
     Δt = step(timestamps)
 
-    @showprogress for (step, t) in enumerate(timestamps)
+    savepoints = collect(LinRange(0, femcond.t_stop, femcond.num_data))
+    savecounts = 1
+
+    if return_solution
+        primarynodes = get_allnodes(grid_entire, 1)
+        nprimarynodes = length(primarynodes)
+        sol = Solution(nprimarynodes, femcond.num_data)
+        sol.z .= map(z->only(z-first(primarynodes)), primarynodes)
+    end
+
+    @showprogress for t in timestamps
         f .= fγ
         f[begin] += femcond.input_load(t)
 
@@ -280,7 +312,9 @@ function solve(
         end
         nlsolve!(R!, J!, u, dirichlet; symmetric=true, f_tol=1e-8, dx_tol=1e-12)
 
-        if step == 1 || step % max(1, length(timestamps)÷femcond.num_data) == 0
+        if t ≥ first(savepoints)
+            popfirst!(savepoints)
+
             V = zeros(ndofs)
             FV = zeros(ndofs)
             ZV = zeros(ndofs) # projection for impedance `Z`
@@ -303,8 +337,18 @@ function solve(
             end
             Fᵢ = FV ./ V
             Zᵢ = ZV ./ V
+
+            if return_solution
+                sol.t[savecounts] = t
+                sol.u[:,savecounts] .= view(u, 1:nprimarynodes)
+                sol.v[:,savecounts] .= view(v, 1:nprimarynodes)
+                sol.a[:,savecounts] .= view(a, 1:nprimarynodes)
+                sol.f[:,savecounts] .= view(Fᵢ, 1:nprimarynodes)
+                sol.Z[:,savecounts] .= view(Zᵢ, 1:nprimarynodes)
+            end
+
             openpvd(pvdfile; append=true) do pvd
-                openvtk(joinpath(femcond.outdir, "paraview", "fepile1d_$step"), grid_entire) do vtk
+                openvtk(joinpath(femcond.outdir, "paraview", "fepile1d_$savecounts"), grid_entire) do vtk
                     vtk["Displacement"] = u
                     vtk["Force"] = Fᵢ
                     pvd[t] = vtk
@@ -324,8 +368,10 @@ function solve(
                     write(io, "$t,$displacement,$velocity,$acceleration,$force,$force_down,$force_up\n")
                 end
             end
+
+            savecounts += 1
         end
     end
 
-    return_u ? u : nothing
+    return_solution ? sol : nothing
 end
