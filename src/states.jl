@@ -131,7 +131,7 @@ function assemble!(
         C = est.C[i]
         τ̄ = est.τ̄[i]
         v = v˜[i]
-        w*(τ̄*θ + C*v)
+        w*θ*(τ̄ + C*v)
     end
 
     nothing
@@ -147,15 +147,16 @@ function assemble!(
     )
     # velocity contribution
     integrate!(C_tan, Sf(), grid) do i, w, dv
+        θ = est.θ[i]
         C = est.C[i]
-        w*C*dv
+        w*θ*C*dv
     end
 
     # displacement contribution
     integrate!(K_tan, Sf(), grid) do i, w, du
         θ = est.θ[i]
         dτ̄du = est.dτ̄du[i]
-        w*dτ̄du*θ*du
+        w*θ*dτ̄du*du
     end
 
     nothing
