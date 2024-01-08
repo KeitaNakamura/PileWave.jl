@@ -7,6 +7,7 @@ struct FEMCondition{F}
     # output
     num_data::Int
     outdir::String
+    paraview::Bool
     histinds::Vector{Int}
     show_progress::Bool
     # Newmark-beta method
@@ -40,6 +41,8 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     ## output directory
     outdir = Output.directory
     outdir = isabspath(outdir) ? outdir : joinpath(dirname(file.name), outdir)
+    ## paraview
+    paraview = Output.paraview
     ## histinds
     histpts = Output.history_points
     histinds = map(histpts) do pt
@@ -57,7 +60,9 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
     β = NewmarkBeta.beta
     γ = NewmarkBeta.gamma
 
-    FEMCondition(gravity, t_stop, dt_cr, input_load, num_data, outdir, histinds, show_progress, β, γ)
+    FEMCondition(gravity, t_stop, dt_cr, input_load,
+                 num_data, outdir, paraview, histinds, show_progress,
+                 β, γ)
 end
 
 function generate_grids(shape::Femto.Line, Pile::Vector{TOMLPile}, embedded_depth::Real)
@@ -239,19 +244,21 @@ function solve(
 
     # setup outputs
     isdir(femcond.outdir) && rm(femcond.outdir; recursive=true, force=true)
-    mkpath(joinpath(femcond.outdir, "paraview"))
-    mkpath(joinpath(femcond.outdir, "history"))
-    ## paraview
-    pvdfile = joinpath(femcond.outdir, "paraview", "fepile1d")
-    openpvd(identity, pvdfile)
-    ## history
-    for i in eachindex(femcond.histinds)
-        index = femcond.histinds[i]
-        open(joinpath(femcond.outdir, "history", "history_$i.csv"), "w") do io
-            nodes = get_allnodes(grid_entire)
-            z = only(nodes[index] - nodes[1])
-            write(io, "# data at z = $z\n")
-            write(io, "time,displacement,velocity,acceleration,force,force_down,force_up\n")
+    if femcond.paraview
+        mkpath(joinpath(femcond.outdir, "paraview"))
+        pvdfile = joinpath(femcond.outdir, "paraview", "fepile1d")
+        closepvd(openpvd(pvdfile))
+    end
+    if !isempty(femcond.histinds)
+        mkpath(joinpath(femcond.outdir, "history"))
+        for i in eachindex(femcond.histinds)
+            index = femcond.histinds[i]
+            open(joinpath(femcond.outdir, "history", "history_$i.csv"), "w") do io
+                nodes = get_allnodes(grid_entire)
+                z = only(nodes[index] - nodes[1])
+                write(io, "# data at z = $z\n")
+                write(io, "time,displacement,velocity,acceleration,force,force_down,force_up\n")
+            end
         end
     end
 
@@ -352,25 +359,29 @@ function solve(
                 sol.Z[:,savecounts] .= view(Zᵢ, 1:nprimarynodes)
             end
 
-            openpvd(pvdfile; append=true) do pvd
-                openvtk(joinpath(femcond.outdir, "paraview", "fepile1d_$savecounts"), grid_entire) do vtk
-                    vtk["Displacement"] = u
-                    vtk["Force"] = Fᵢ
-                    pvd[t] = vtk
+            if femcond.paraview
+                openpvd(pvdfile; append=true) do pvd
+                    openvtk(joinpath(femcond.outdir, "paraview", "fepile1d_$savecounts"), grid_entire) do vtk
+                        vtk["Displacement"] = u
+                        vtk["Force"] = Fᵢ
+                        pvd[t] = vtk
+                    end
                 end
             end
-            # history
-            for i in eachindex(femcond.histinds)
-                index = femcond.histinds[i]
-                open(joinpath(femcond.outdir, "history", "history_$i.csv"), "a") do io
-                    displacement = u[index]
-                    velocity = v[index]
-                    acceleration = v[index]
-                    force = Fᵢ[index]
-                    impedance = Zᵢ[index]
-                    force_down = (force + impedance*velocity) / 2
-                    force_up = (force - impedance*velocity) / 2
-                    write(io, "$t,$displacement,$velocity,$acceleration,$force,$force_down,$force_up\n")
+
+            if !isempty(femcond.histinds)
+                for i in eachindex(femcond.histinds)
+                    index = femcond.histinds[i]
+                    open(joinpath(femcond.outdir, "history", "history_$i.csv"), "a") do io
+                        displacement = u[index]
+                        velocity = v[index]
+                        acceleration = v[index]
+                        force = Fᵢ[index]
+                        impedance = Zᵢ[index]
+                        force_down = (force + impedance*velocity) / 2
+                        force_up = (force - impedance*velocity) / 2
+                        write(io, "$t,$displacement,$velocity,$acceleration,$force,$force_down,$force_up\n")
+                    end
                 end
             end
 
