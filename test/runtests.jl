@@ -5,7 +5,8 @@ using LinearAlgebra
 using TOML
 const TOMLDict = Dict{String, Any}
 
-@testset "Analytical solutions" begin
+let
+    # common part for `Simple sine wave` and `Vibration motion`
     R = 200e-3
     L = 10.0
     E = 3e10
@@ -35,7 +36,8 @@ const TOMLDict = Dict{String, Any}
         perimeter      = $θ
         """)
     )
-    @testset "Simple sine wave with no friction on shaft" begin
+
+    @testset "Simple sine wave" begin
         fcurve(z) = z < 5 ? F*sin(π*(z/5)) : 0.0
         @testset "Bottom fixed" begin
             dict = merge(default, TOML.parse("""
@@ -55,6 +57,7 @@ const TOMLDict = Dict{String, Any}
             @test sol.f[:,end] ≈ -map(fcurve, sol.z) rtol=0.01
         end
     end
+
     @testset "Vibration motion" begin
         default["Advanced"]["CFL"] = 10.0
         @testset "Spring" begin
@@ -124,7 +127,7 @@ const TOMLDict = Dict{String, Any}
     end
 end
 
-@testset "Nearly static loading" begin
+@testset "Static behaviors" begin
     F = 500.0
     t1 = 10.0 # linearly incrase the load by `t1`
     L = 10.0
