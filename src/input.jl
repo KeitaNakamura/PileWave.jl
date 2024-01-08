@@ -39,7 +39,8 @@ end
 Base.@kwdef mutable struct TOMLOutput
     directory      :: String          = ""
     num_data       :: Int             = 200
-    history_points :: Vector{Float64} = Float64[]
+    paraview       :: Bool            = false
+    history_points :: Vector{Float64} = [0.0]
     show_progress  :: Bool            = true
 end
 
