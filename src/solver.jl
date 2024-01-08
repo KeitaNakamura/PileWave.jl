@@ -8,6 +8,7 @@ struct FEMCondition{F}
     num_data::Int
     outdir::String
     histinds::Vector{Int}
+    show_progress::Bool
     # Newmark-beta method
     β::Float64
     γ::Float64
@@ -48,13 +49,15 @@ function FEMCondition(file::TOMLFile, grids::Vector{<: Grid})
         value, index = findmin(x->abs((only(x)-pt) - only(first(nodes))), nodes)
         index
     end
+    ## progress
+    show_progress = Output.show_progress
 
     # parameters for Newmark-beta method
     NewmarkBeta = file.Advanced.NewmarkBeta
     β = NewmarkBeta.beta
     γ = NewmarkBeta.gamma
 
-    FEMCondition(gravity, t_stop, dt_cr, input_load, num_data, outdir, histinds, β, γ)
+    FEMCondition(gravity, t_stop, dt_cr, input_load, num_data, outdir, histinds, show_progress, β, γ)
 end
 
 function generate_grids(shape::Femto.Line, Pile::Vector{TOMLPile}, embedded_depth::Real)
@@ -265,7 +268,10 @@ function solve(
         sol.z .= map(z->only(z-first(primarynodes)), primarynodes)
     end
 
-    @showprogress for t in timestamps
+    if femcond.show_progress
+        prog = ProgressMeter.Progress(length(timestamps))
+    end
+    for (step, t) in enumerate(timestamps)
         f .= fγ
         f[begin] += femcond.input_load(t)
 
@@ -369,6 +375,10 @@ function solve(
             end
 
             savecounts += 1
+        end
+
+        if femcond.show_progress
+            ProgressMeter.update!(prog, step)
         end
     end
 

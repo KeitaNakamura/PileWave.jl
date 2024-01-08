@@ -5,6 +5,8 @@ using LinearAlgebra
 using TOML
 const TOMLDict = Dict{String, Any}
 
+cd(tempdir()) do
+
 let
     # common part for `Simple sine wave` and `Vibration motion`
     R = 200e-3
@@ -21,6 +23,9 @@ let
                 "gravity"        => 0.0,
                 "t_stop"         => 4e-3,
                 "input_load"     => t -> ifelse(t<1e-3, F*sin(π*(t/1e-3)), 0)
+            ),
+            "Output" => TOMLDict(
+                "show_progress" => false,
             ),
             "Advanced" => TOMLDict(
                 "CFL" => 0.1,
@@ -142,6 +147,9 @@ end
                 "t_stop" => 500.0,
                 "input_load" => t -> ifelse(t < t1, (F/t1)*t, F)
             ),
+            "Output" => TOMLDict(
+                "show_progress" => false,
+            ),
             "Advanced" => TOMLDict(
                 "shape" => PileWave.Line2(),
                 "CFL" => 10.0,
@@ -218,4 +226,6 @@ end
         @test sol.u[:,end] ≈ LinRange(u_top+u_bottom, u_bottom, 101) rtol=0.05
         @test sol.f[:,end] ≈ LinRange(f_top, f_bottom, 101) rtol=0.05
     end
+end
+
 end

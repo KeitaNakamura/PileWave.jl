@@ -40,6 +40,7 @@ Base.@kwdef mutable struct TOMLOutput
     directory      :: String          = ""
     num_data       :: Int             = 200
     history_points :: Vector{Float64} = Float64[]
+    show_progress  :: Bool            = true
 end
 
 Base.@kwdef struct TOMLAdvanced_NewmarkBeta
