@@ -59,44 +59,70 @@ const TOMLDict = Dict{String, Any}
         end
         @testset "Vibration motion" begin
             default["Advanced"]["CFL"] = 10.0
-            @testset "Spring on shaft" begin
+            @testset "Spring" begin
                 default["Input"]["t_stop"] = 100e-3
                 k = 2e6
                 σ_y = 100e6 # should be large enough
-                dict = merge(default, TOML.parse("""
-                [[SoilLayer]]
-                thickness = 20.0
-                shaft = {quake = $(σ_y/k), yield_stress = $σ_y}
-                """))
-                sol = PileWave.solve(dict, return_solution=true)
-                index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
-                a = maximum(sol.u[index,:])
                 m = ρ*A*L
                 K = k*θ*L
                 ω = √(K/m)
-                @test sol.u[index,:] ≈ map(t->a*sin(ω*t), sol.t) rtol=0.12
+                @testset "on shaft" begin
+                    dict = merge(default, TOML.parse("""
+                    [[SoilLayer]]
+                    thickness = 20.0
+                    shaft = {quake = $(σ_y/k), yield_stress = $σ_y}
+                    """))
+                    sol = PileWave.solve(dict, return_solution=true)
+                    index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
+                    a = maximum(sol.u[index,:])
+                    @test sol.u[index,:] ≈ map(t->a*sin(ω*t), sol.t) rtol=0.12
+                end
+                @testset "at bottom" begin
+                    dict = merge(default, TOML.parse("""
+                    [[SoilLayer]]
+                    thickness = 20.0
+                    bottom = {quake = $(σ_y/(K/A)), yield_stress = $σ_y, yield_factor = 1.0}
+                    """))
+                    sol = PileWave.solve(dict, return_solution=true)
+                    index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
+                    a = maximum(sol.u[index,:])
+                    @test sol.u[index,:] ≈ map(t->a*sin(ω*t), sol.t) rtol=0.2
+                end
             end
             if SoilModel isa PileWave.VoigtModel
-                @testset "Spring and dashpot on shaft" begin
+                @testset "Spring and dashpot" begin
                     default["Input"]["t_stop"] = 200e-3
                     k = 2e6
                     σ_y = 1000e6 # should be large enough
                     c = 5e3
-                    dict = merge(default, TOML.parse("""
-                    [[SoilLayer]]
-                    thickness = 20.0
-                    shaft = {quake = $(σ_y/k), yield_stress = $σ_y, damping = $c}
-                    """))
-                    sol = PileWave.solve(dict, return_solution=true)
-                    index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
                     m = ρ*A*L
                     K = k*θ*L
                     C = c*θ*L
                     ω = 1/2m*√(4m*K-C^2)
                     Γ = C/2m
                     T = 2π/ω
-                    a = maximum(sol.u[index,:]) * exp(Γ*T/4)
-                    @test sol.u[index,:] ≈ map(t->a*exp(-Γ*t)*sin(ω*t), sol.t) rtol=0.12
+                    @testset "on shaft" begin
+                        dict = merge(default, TOML.parse("""
+                        [[SoilLayer]]
+                        thickness = 20.0
+                        shaft = {quake = $(σ_y/k), yield_stress = $σ_y, damping = $c}
+                        """))
+                        sol = PileWave.solve(dict, return_solution=true)
+                        index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
+                        a = maximum(sol.u[index,:]) * exp(Γ*T/4)
+                        @test sol.u[index,:] ≈ map(t->a*exp(-Γ*t)*sin(ω*t), sol.t) rtol=0.12
+                    end
+                    @testset "at bottom" begin
+                        dict = merge(default, TOML.parse("""
+                        [[SoilLayer]]
+                        thickness = 20.0
+                        bottom = {quake = $(σ_y/(K/A)), yield_stress = $σ_y, damping = $(C/A), yield_factor = 1.0}
+                        """))
+                        sol = PileWave.solve(dict, return_solution=true)
+                        index = argmin(i->abs(sol.z[i]-5), eachindex(sol.z))
+                        a = maximum(sol.u[index,:]) * exp(Γ*T/4)
+                        @test sol.u[index,:] ≈ map(t->a*exp(-Γ*t)*sin(ω*t), sol.t) rtol=0.12
+                    end
                 end
             end
         end
