@@ -92,9 +92,9 @@ function eachlayer(f, layers::Vector)
         top = bottom
     end
 end
-function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Vector, piles::Vector{TOMLPile}) where {Model}
+function generate_elementstate(grids::Vector{<: Grid}, layers::Vector, piles::Vector{TOMLPile})
     # shaft state
-    ests = map(grid->Femto.generate_elementstate(get_elementstate_type(Model), grid), grids)
+    ests = map(grid->Femto.generate_elementstate(ElementState, grid), grids)
     for (pile, grid, est) in zip(piles, grids, ests)
         for i in eachindex(est)
             set_elementstate!(LazyRow(est, i), pile)
@@ -119,7 +119,7 @@ function generate_elementstate(::Type{Model}, grids::Vector{<: Grid}, layers::Ve
     layer_bottom = eachlayer(layers) do layer, top, bottom
         (top≤depth≤bottom || depth≈bottom) ? layer : nothing
     end
-    estbtm = create_elementstatebottom(Model, piles[end], layer_bottom.bottom, btm)
+    estbtm = create_elementstatebottom(piles[end], layer_bottom.bottom, btm)
 
     ests, estbtm
 end
@@ -132,8 +132,7 @@ function setup(file::TOMLFile)
     grids = generate_grids(file.Advanced.shape,
                            file.Pile,
                            file.Input.embedded_depth)
-    ests, estbtm = generate_elementstate(file.Input.soilmodel,
-                                         grids,
+    ests, estbtm = generate_elementstate(grids,
                                          file.SoilLayer,
                                          file.Pile)
     femcond = FEMCondition(file, grids)

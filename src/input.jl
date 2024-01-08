@@ -1,8 +1,6 @@
-###############
-# Soil models #
-###############
-
-abstract type SoilModel end
+##############
+# Soil layer #
+##############
 
 Base.@kwdef struct SoilModel_Shaft
     quake        :: Float64 = Inf
@@ -21,13 +19,7 @@ Base.@kwdef struct SoilModel_Bottom
     damping      :: Float64 = 0.0
 end
 
-Base.@kwdef struct VoigtModel <: SoilModel
-    thickness :: Float64
-    shaft     :: SoilModel_Shaft  = SoilModel_Shaft()
-    bottom    :: SoilModel_Bottom = SoilModel_Bottom()
-end
-
-Base.@kwdef struct SmithModel <: SoilModel
+Base.@kwdef struct TOMLSoilLayer
     thickness :: Float64
     shaft     :: SoilModel_Shaft  = SoilModel_Shaft()
     bottom    :: SoilModel_Bottom = SoilModel_Bottom()
@@ -37,8 +29,7 @@ end
 # Other conditions #
 ####################
 
-Base.@kwdef struct TOMLInput{Model}
-    soilmodel      :: Type{Model} = VoigtModel
+Base.@kwdef struct TOMLInput
     embedded_depth :: Float64
     gravity        :: Float64
     t_stop         :: Float64
@@ -73,13 +64,13 @@ Base.@kwdef struct TOMLPile
     area_bottom    :: Float64 = area
 end
 
-struct TOMLFile{M <: SoilModel, S <: Femto.Line}
+struct TOMLFile{S <: Femto.Line}
     name       :: String
-    Input      :: TOMLInput{M}
+    Input      :: TOMLInput
     Output     :: TOMLOutput
     Advanced   :: TOMLAdvanced{S}
     Pile       :: Vector{TOMLPile}
-    SoilLayer  :: Vector{M}
+    SoilLayer  :: Vector{TOMLSoilLayer}
 end
 
 function read_inputfile(file::String)
@@ -94,7 +85,7 @@ function read_input(dict::Dict{String, Any})
     Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", Dict{String, Any}()))
     Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", Dict{String, Any}()))
     Pile       = map(pile->TOMLX.from_dict(TOMLPile, pile), dict["Pile"])
-    SoilLayer  = map(layer->TOMLX.from_dict(Input.soilmodel, layer), dict["SoilLayer"])
+    SoilLayer  = map(layer->TOMLX.from_dict(TOMLSoilLayer, layer), dict["SoilLayer"])
     # modify output directory
     Output.directory = Output.directory=="" ? splitext(basename(name))[1]*".tmp" : Output.directory
     TOMLFile(name, Input, Output, Advanced, Pile, SoilLayer)
