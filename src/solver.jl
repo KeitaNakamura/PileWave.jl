@@ -173,7 +173,7 @@ function Solution(num_nodes::Int, num_timestamps::Int)
 end
 
 solve(path::String; return_solution::Bool=false) = solve(read_inputfile(path); return_solution)
-solve(dict::Dict{String, Any}; return_solution::Bool=false) = solve(read_input(dict); return_solution)
+solve(dict::TOMLDict; return_solution::Bool=false) = solve(read_input(dict); return_solution)
 
 function solve(file::TOMLFile; return_solution::Bool = false)
     femcond, grids, ests, estbtm = setup(file)

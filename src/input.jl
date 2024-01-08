@@ -1,3 +1,5 @@
+const TOMLDict = Dict{String, Any}
+
 ##############
 # Soil layer #
 ##############
@@ -49,8 +51,8 @@ Base.@kwdef struct TOMLAdvanced_NewmarkBeta
     gamma :: Float64 = 1/2
 end
 
-Base.@kwdef struct TOMLAdvanced{S <: Shape}
-    shape       :: S                        = Line3()
+Base.@kwdef struct TOMLAdvanced
+    shape       :: Shape                    = Line3()
     CFL         :: Float64                  = 0.5
     NewmarkBeta :: TOMLAdvanced_NewmarkBeta = TOMLAdvanced_NewmarkBeta()
 end
@@ -66,11 +68,11 @@ Base.@kwdef struct TOMLPile
     area_bottom    :: Float64 = area
 end
 
-struct TOMLFile{S <: Femto.Line}
+struct TOMLFile
     name       :: String
     Input      :: TOMLInput
     Output     :: TOMLOutput
-    Advanced   :: TOMLAdvanced{S}
+    Advanced   :: TOMLAdvanced
     Pile       :: Vector{TOMLPile}
     SoilLayer  :: Vector{TOMLSoilLayer}
 end
@@ -81,11 +83,11 @@ function read_inputfile(file::String)
     read_input(dict)
 end
 
-function read_input(dict::Dict{String, Any})
+function read_input(dict::TOMLDict)
     name = get(dict, "__name__", "fem1d")
     Input      = TOMLX.from_dict(TOMLInput, dict["Input"])
-    Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", Dict{String, Any}()))
-    Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", Dict{String, Any}()))
+    Output     = TOMLX.from_dict(TOMLOutput, get(dict, "Output", TOMLDict()))
+    Advanced   = TOMLX.from_dict(TOMLAdvanced, get(dict, "Advanced", TOMLDict()))
     Pile       = map(pile->TOMLX.from_dict(TOMLPile, pile), dict["Pile"])
     SoilLayer  = map(layer->TOMLX.from_dict(TOMLSoilLayer, layer), dict["SoilLayer"])
     # modify output directory
