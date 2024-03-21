@@ -375,7 +375,7 @@ function solve(
                     open(joinpath(femcond.outdir, "history", "history_$i.csv"), "a") do io
                         displacement = u[index]
                         velocity = v[index]
-                        acceleration = v[index]
+                        acceleration = a[index]
                         force = Fᵢ[index]
                         impedance = Zᵢ[index]
                         force_down = (force + impedance*velocity) / 2
