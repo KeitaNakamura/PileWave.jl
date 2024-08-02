@@ -5,20 +5,22 @@ const TOMLDict = Dict{String, Any}
 ##############
 
 Base.@kwdef struct SoilModel_Shaft
-    quake        :: Float64 = Inf
-    quake_1      :: Float64 = quake
-    quake_2      :: Float64 = quake_1
-    yield_stress :: Float64 = 0.0
-    yield_factor :: Float64 = 1.0
-    damping      :: Float64 = 0.0
+    quake         :: Float64 = Inf
+    quake_1       :: Float64 = quake
+    quake_2       :: Float64 = quake_1
+    yield_stress  :: Float64 = 0.0
+    yield_factor  :: Float64 = 1.0
+    smith_damping :: Float64 = 0.0
+    damping       :: Float64 = ifelse(iszero(smith_damping), 0.0, smith_damping*yield_stress)
 end
 Base.@kwdef struct SoilModel_Bottom
-    quake        :: Float64 = Inf
-    quake_1      :: Float64 = quake
-    quake_2      :: Float64 = quake_1
-    yield_stress :: Float64 = 0.0
-    yield_factor :: Float64 = 0.0
-    damping      :: Float64 = 0.0
+    quake         :: Float64 = Inf
+    quake_1       :: Float64 = quake
+    quake_2       :: Float64 = quake_1
+    yield_stress  :: Float64 = 0.0
+    yield_factor  :: Float64 = 0.0
+    smith_damping :: Float64 = 0.0
+    damping       :: Float64 = ifelse(iszero(smith_damping), 0.0, smith_damping*yield_stress)
 end
 
 Base.@kwdef struct TOMLSoilLayer
